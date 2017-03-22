@@ -59,15 +59,14 @@ void ListDir(char* path, const char* list[])
 }
 
 //Get character input from software keyboard
-int getcharinput(char *out) //Needs to be fixed
+void getcharinput(char * out)
 {
-	char mybuf[2];
+	char mychar[3] = {0};
 	static SwkbdState swkbd;
-	SwkbdButton button = SWKBD_BUTTON_NONE;
-	swkbdInit(&swkbd, SWKBD_TYPE_NORMAL, 1, -1);
-	swkbdSetValidation(&swkbd, 0, 0, 0);
-	button = swkbdInputText(&swkbd, mybuf, sizeof(mybuf));
-	return 0;
+	swkbdInit(&swkbd, SWKBD_TYPE_NORMAL, 1, 1);
+	swkbdSetValidation(&swkbd, SWKBD_FIXEDLEN, 0, 0);
+	swkbdInputText(&swkbd, mychar, 2);
+	*out = (mychar[0] & 0x7F);
 }
 
 void Step()
@@ -123,7 +122,7 @@ int interpret(char *c)
 		case '+': a[p]++; update = BIT_UPDATE_BANKS; break;
 		case '-': a[p]--; update = BIT_UPDATE_BANKS; break;
 		case '.': putchar(a[p]); fflush(stdout); update = BIT_STEP; break;
-		case ',': getcharinput(&a[p]);fflush(stdout); update = BIT_UPDATE_BANKS; break;
+		case ',': getcharinput(&a[p]); fflush(stdout); update = BIT_UPDATE_BANKS; break;
 		case '[':
 			for( b=1,d=c; b && *c; c++ )
 				b+=*c=='[', b-=*c==']';
