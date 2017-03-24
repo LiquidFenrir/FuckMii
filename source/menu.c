@@ -1,6 +1,4 @@
 #include <3ds.h>
-#include <stdint.h>
-#include <string.h>
 #include <stdio.h>
 
 int display_menu(const char *menu_entries[], const int entries, const char *headerstr)

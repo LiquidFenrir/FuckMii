@@ -1,12 +1,8 @@
 #include <3ds.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dirent.h>
 
 #include "menu.h"
-
-#define SCRIPTS_PATH "/3ds/FuckMii/scripts/"
+#include "filebrowser/filebrowser.h"
 
 #define GETBIT(var, n) ((var >> n) & 1)
 #define BIT_STEP 1
@@ -14,11 +10,8 @@
 
 //Initiate the variables
 int  p, r, q, i, PrintBanks=0, i2 = 0, MenuIndex, step=0;
-char a[5000], b, o, s[5000], FilePath[262] , header[262] = "Please choose the script to run";
-const char *files[255];
+char a[5000], b, o, s[5000], FilePath[262];
 PrintConsole topScreen, bottomScreen;
-DIR *dp;
-struct dirent *ep;
 FILE *z;
 
 const char *mode[] =
@@ -40,22 +33,6 @@ void Wait4key(u32 key)
 			
 			gspWaitForVBlank();
 		}
-}
-	
-//Function used for listing the files in a folder
-void ListDir(char* path, const char* list[])
-{
-	dp = opendir(path);
-	if(dp != NULL)
-	{
-		while ((ep = readdir(dp)))
-		{
-			list[i2] = malloc(strlen(ep->d_name) + 1);
-			strcpy((char *)list[i2], ep->d_name);
-			i2++;
-		}
-		(void) closedir (dp);
-	}
 }
 
 //Get character input from software keyboard
@@ -170,16 +147,7 @@ int main()
 	step = GETBIT(MenuIndex, BIT_STEP);
 	PrintBanks = GETBIT(MenuIndex, BIT_UPDATE_BANKS);
 
-	//Find all files in the FuckMii folder in the root of the sd card
-	ListDir(SCRIPTS_PATH, files);
-	//Ask the user which file to run (might need to be made better, due for some people to have tons of files in their folder)
-	MenuIndex = display_menu(files, i2, header);
-	if (MenuIndex == -1) goto exit;
-
-	//Getting ready for the file to be ran	
-	snprintf(FilePath, 255, "%s%s", SCRIPTS_PATH, files[MenuIndex]);
-	consoleClear();
-	z=fopen(FilePath,"rb");
+	z=fopen(filebrowser(),"rb"); //let the user go to the file then load it
 	//Read and run file
 	if(z)
 	{
